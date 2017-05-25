@@ -53,7 +53,7 @@ var args = os.Args[1:]
 // provided values by priority.
 func Init(c interface{}, prefix string) error {
 	rv := reflect.ValueOf(c)
-	if rv.Kind() != reflect.Ptr || rv.IsNil() || reflect.ValueOf(reflect.Indirect(rv)).Kind() != reflect.Struct {
+	if rv.Kind() != reflect.Ptr || rv.IsNil() {
 		return errInvalidReceiver
 	}
 	EnvPrefix = prefix
@@ -67,7 +67,10 @@ func Init(c interface{}, prefix string) error {
 
 // initConfig recursively loads parameters to Config struct, supports nested structs.
 func initConfig(c reflect.Value, flagSet *flag.FlagSet, prefix string) error {
-	c = reflect.Indirect(c)
+        c = reflect.Indirect(c)
+        if c.Kind() != reflect.Struct {
+                return errInvalidReceiver
+        }
 	for i := 0; i < c.NumField(); i++ {
 		var value string
 		field := c.Field(i)
