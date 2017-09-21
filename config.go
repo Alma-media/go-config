@@ -5,14 +5,13 @@
 package config
 
 import (
+	"errors"
 	"flag"
 	"os"
 	"reflect"
 	"strconv"
 	"strings"
-	"errors"
 )
-
 
 var (
 	// receiver is not a pointer to a struct or a nil pointer
@@ -24,7 +23,6 @@ var (
 		return errors.New("Unsupported type: " + typeName)
 	}
 )
-
 
 // private constants
 const (
@@ -44,13 +42,14 @@ const (
 	space = " "
 )
 
+// EnvPrefix is a prefix in the beginning of environment variable name (used to
+// easily differentiate variables of your application).
 var EnvPrefix string
 
 // command line arguments
 var args = os.Args[1:]
 
-// New is config constructor. Creates an instance of config and fills it with
-// provided values by priority.
+// Init config values.
 func Init(c interface{}, prefix string) error {
 	rv := reflect.ValueOf(c)
 	if rv.Kind() != reflect.Ptr || rv.IsNil() {
@@ -65,7 +64,8 @@ func Init(c interface{}, prefix string) error {
 	return nil
 }
 
-// initConfig recursively loads parameters to Config struct, supports nested structs.
+// initConfig recursively loads parameters to Config struct, supports nested
+// anonymous structs.
 func initConfig(c reflect.Value, flagSet *flag.FlagSet, prefix string) error {
         c = reflect.Indirect(c)
         if c.Kind() != reflect.Struct {
@@ -75,7 +75,7 @@ func initConfig(c reflect.Value, flagSet *flag.FlagSet, prefix string) error {
 		var value string
 		field := c.Field(i)
 		if field.Kind() == reflect.Struct {
-			np := nestedPrefix(prefix, field.Type().Name())
+			np := nestedPrefix(prefix, c.Type().Field(i).Name)
 			err := initConfig(field.Addr(), flagSet, np)
 			if err != nil {
 				return err
@@ -139,7 +139,7 @@ func nestedPrefix(base, newPrefix string) string {
 }
 
 // envName gets environment variable name for passed field based on provided
-// struct tags or default rules (ENVPREFIX_STRUCTNAME_NESTEDSTRUCTNAME_VARNAME)
+// struct tags or default rules (ENVPREFIX_STRUCTNAME_NESTEDSTRUCTNAME_VARNAME).
 func envName(field reflect.StructField, prefix string) string {
 	tag := field.Tag.Get(keyEnvTag)
 	if tag != "" {
@@ -150,7 +150,7 @@ func envName(field reflect.StructField, prefix string) string {
 }
 
 // flagName gets flag name for passed field based on provided struct tags or
-// default rules (-structname-nestedstructname-varname)
+// default rules (-structname-nestedstructname-varname).
 func flagName(field reflect.StructField, prefix string) string {
 	tag := field.Tag.Get(keyFlagTag)
 	if tag != "" {
@@ -161,7 +161,7 @@ func flagName(field reflect.StructField, prefix string) string {
 }
 
 // joinStrings similar to strings.Join, but omits empty values, also replaces
-// spaces with provided separator
+// spaces with provided separator.
 func joinStrings(sep string, parts ...string) string {
 	var components []string
 	for _, part := range parts {
