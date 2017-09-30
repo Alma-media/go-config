@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var (
@@ -20,7 +21,7 @@ var (
 	errCantSet = errors.New("Value can not be set")
 	// trying to assign the value to unsupported field type
 	errUnsupportedType = func(typeName string) error {
-		return errors.New("Unsupported type: " + typeName)
+		return errors.New("Unsupported type in config: " + typeName)
 	}
 )
 
@@ -104,26 +105,52 @@ func initConfig(c reflect.Value, flagSet *flag.FlagSet, prefix string) error {
 }
 
 // setValue casts string value and assigns it to the field of Config struct.
-// Currently supports: bool, int and string values.
 func setValue(field reflect.Value, flagSet *flag.FlagSet, flgKey, value string) error {
-	switch field.Kind() {
-	case reflect.Int:
+	switch field.Interface().(type) {
+	case time.Duration:
+		val, err := time.ParseDuration(value)
+		if err != nil {
+			return err
+		}
+		flagSet.DurationVar(field.Addr().Interface().(*time.Duration), flgKey, val, "")
+	case int:
 		val, err := strconv.Atoi(value)
 		if err != nil {
 			return err
 		}
-		ptr := field.Addr().Interface().(*int)
-		flagSet.IntVar(ptr, flgKey, val, "")
-	case reflect.String:
-		ptr := field.Addr().Interface().(*string)
-		flagSet.StringVar(ptr, flgKey, value, "")
-	case reflect.Bool:
+		flagSet.IntVar(field.Addr().Interface().(*int), flgKey, val, "")
+	case int64:
+		val, err := strconv.ParseInt(value, 10, 64)
+		if err != nil {
+			return err
+		}
+		flagSet.Int64Var(field.Addr().Interface().(*int64), flgKey, val, "")
+	case uint:
+		val, err := strconv.ParseUint(value, 10, 64)
+		if err != nil {
+			return err
+		}
+		flagSet.UintVar(field.Addr().Interface().(*uint), flgKey, uint(val), "")
+	case uint64:
+		val, err := strconv.ParseUint(value, 10, 64)
+		if err != nil {
+			return err
+		}
+		flagSet.Uint64Var(field.Addr().Interface().(*uint64), flgKey, val, "")
+	case float64:
+		val, err := strconv.ParseFloat(value, 64)
+		if err != nil {
+			return err
+		}
+		flagSet.Float64Var(field.Addr().Interface().(*float64), flgKey, val, "")
+	case string:
+		flagSet.StringVar(field.Addr().Interface().(*string), flgKey, value, "")
+	case bool:
 		val, err := strconv.ParseBool(value)
 		if err != nil {
 			val = false
 		}
-		ptr := field.Addr().Interface().(*bool)
-		flagSet.BoolVar(ptr, flgKey, val, "")
+		flagSet.BoolVar(field.Addr().Interface().(*bool), flgKey, val, "")
 	default:
 		return errUnsupportedType(field.Kind().String())
 	}
