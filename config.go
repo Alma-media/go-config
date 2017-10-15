@@ -66,7 +66,7 @@ var seen map[string]bool
 
 // Init config values.
 func Init(c interface{}, prefix string) error {
-	// check argument type (only struct or pointer to struct are supported)
+	// check argument type (only pointer to struct is supported)
 	rv := reflect.ValueOf(c)
 	if rv.Kind() != reflect.Ptr || rv.IsNil() {
 		return errInvalidReceiver
