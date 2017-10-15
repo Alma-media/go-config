@@ -7,6 +7,7 @@ package config
 import (
 	"errors"
 	"flag"
+	"fmt"
 	"os"
 	"reflect"
 	"strconv"
@@ -21,7 +22,15 @@ var (
 	errCantSet = errors.New("Value can not be set")
 	// trying to assign the value to unsupported field type
 	errUnsupportedType = func(typeName string) error {
-		return errors.New("Unsupported type in config: " + typeName)
+		return fmt.Errorf("Unsupported type [%s] in config", typeName)
+	}
+	// value parse error
+	errCantUse = func(val string, typ interface{}) error {
+		return fmt.Errorf("cannot use [%s] as type [%T]", val, typ)
+	}
+	// missing required argument/flag
+	errMissingRequired = func(name string) error {
+		return fmt.Errorf("missing required [--%s] argument/flag", name)
 	}
 )
 
@@ -29,6 +38,8 @@ var (
 const (
 	// keyDefaultTag - tag name for default value
 	keyDefaultTag = "default"
+	// keyIsRequired shold have any non-empty value if variable is required
+	keyIsRequired = "required"
 	// keyEnvVar - tag name for env variable name
 	keyEnvTag = "env"
 	// keyFlagTag - tag name for variable flag.
@@ -50,18 +61,36 @@ var EnvPrefix string
 // command line arguments
 var args = os.Args[1:]
 
+// required args/flags container
+var seen map[string]bool
+
 // Init config values.
 func Init(c interface{}, prefix string) error {
+	// check argument type (only pointer to struct is supported)
 	rv := reflect.ValueOf(c)
 	if rv.Kind() != reflect.Ptr || rv.IsNil() {
 		return errInvalidReceiver
 	}
+	// set custom "application" prefix (will be used to build ENV VAR names)
 	EnvPrefix = prefix
+	// init flagset
 	flagSet := flag.NewFlagSet("config", flag.ContinueOnError)
+	// reset required list
+	seen = make(map[string]bool)
 	if err := initConfig(rv, flagSet, emptyPrefix); err != nil {
 		return err
 	}
+	// parse flags
 	flagSet.Parse(args)
+	// mark as seen flags that have been set
+	flag.Visit(func(f *flag.Flag) { seen[f.Name] = true })
+	// find missing required values
+	for flagName, ok := range seen {
+		if !ok {
+			return errMissingRequired(flagName)
+		}
+	}
+	// success
 	return nil
 }
 
@@ -87,15 +116,25 @@ func initConfig(c reflect.Value, flagSet *flag.FlagSet, prefix string) error {
 			return errCantSet
 		}
 		structField := c.Type().Field(i)
+		flgKey := flagName(structField, prefix)
+		// read "is required" field tag
+		if isRequired := structField.Tag.Get(keyIsRequired); isRequired != "" {
+			// init map cell with flgKey (set false because it was not seen yet)
+			seen[flgKey] = false
+		}
+		// getting value from "default" tag
 		defValue := structField.Tag.Get(keyDefaultTag)
 		if defValue != "" {
 			value = defValue
+			seen[flgKey] = true
 		}
+		// retrieve value from ENV variable
 		envValue := os.Getenv(envName(structField, prefix))
 		if envValue != "" {
 			value = envValue
+			seen[flgKey] = true
 		}
-		flgKey := flagName(structField, prefix)
+		// set value with a flag
 		err := setValue(field, flagSet, flgKey, value)
 		if err != nil {
 			return err
@@ -106,41 +145,41 @@ func initConfig(c reflect.Value, flagSet *flag.FlagSet, prefix string) error {
 
 // setValue casts string value and assigns it to the field of Config struct.
 func setValue(field reflect.Value, flagSet *flag.FlagSet, flgKey, value string) error {
-	switch field.Interface().(type) {
+	switch t := field.Interface().(type) {
 	case time.Duration:
 		val, err := time.ParseDuration(value)
 		if err != nil {
-			return err
+			return errCantUse(value, t)
 		}
 		flagSet.DurationVar(field.Addr().Interface().(*time.Duration), flgKey, val, "")
 	case int:
 		val, err := strconv.Atoi(value)
-		if err != nil {
-			return err
+		if err != nil && value != "" {
+			return errCantUse(value, t)
 		}
 		flagSet.IntVar(field.Addr().Interface().(*int), flgKey, val, "")
 	case int64:
 		val, err := strconv.ParseInt(value, 10, 64)
-		if err != nil {
-			return err
+		if err != nil && value != "" {
+			return errCantUse(value, t)
 		}
 		flagSet.Int64Var(field.Addr().Interface().(*int64), flgKey, val, "")
 	case uint:
 		val, err := strconv.ParseUint(value, 10, 64)
-		if err != nil {
-			return err
+		if err != nil && value != "" {
+			return errCantUse(value, t)
 		}
 		flagSet.UintVar(field.Addr().Interface().(*uint), flgKey, uint(val), "")
 	case uint64:
 		val, err := strconv.ParseUint(value, 10, 64)
-		if err != nil {
-			return err
+		if err != nil && value != "" {
+			return errCantUse(value, t)
 		}
 		flagSet.Uint64Var(field.Addr().Interface().(*uint64), flgKey, val, "")
 	case float64:
 		val, err := strconv.ParseFloat(value, 64)
-		if err != nil {
-			return err
+		if err != nil && value != "" {
+			return errCantUse(value, t)
 		}
 		flagSet.Float64Var(field.Addr().Interface().(*float64), flgKey, val, "")
 	case string:
