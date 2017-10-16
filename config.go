@@ -80,10 +80,10 @@ func Init(c interface{}, prefix string) error {
 	if err := initConfig(rv, flagSet, emptyPrefix); err != nil {
 		return err
 	}
-	// parse flags
+	// parse flags ignoring errors
 	flagSet.Parse(args)
 	// mark as seen flags that have been set
-	flag.Visit(func(f *flag.Flag) { seen[f.Name] = true })
+	flagSet.Visit(func(f *flag.Flag) { seen[f.Name] = true })
 	// find missing required values
 	for flagName, ok := range seen {
 		if !ok {
