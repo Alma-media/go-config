@@ -3,11 +3,33 @@ package config
 import (
 	"flag"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
+
+// system flags should be removed first otherwise they will break the tests
+var toBeRemoved = []string{
+	"-convey",
+	"-test.",
+}
+
+func init() {
+	args = func(arguments []string) (filtered []string) {
+		for _, argument := range arguments {
+			for _, deprecated := range toBeRemoved {
+				if strings.Contains(argument, deprecated) {
+					goto SKIP
+				}
+			}
+			filtered = append(filtered, argument)
+		SKIP:
+		}
+		return
+	}(args)
+}
 
 func Test_JoinStrings(t *testing.T) {
 	type testCase struct {
