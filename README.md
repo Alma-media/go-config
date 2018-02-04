@@ -1,4 +1,7 @@
 # go-config
+
+[![CircleCI](https://circleci.com/gh/Alma-media/go-config.svg?style=shield)](https://circleci.com/gh/Alma-media/go-config)
+
 Utility package to read the configuration.
 
 ## Installation
