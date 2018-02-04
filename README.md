@@ -1,6 +1,7 @@
 # go-config
 
-[![CircleCI](https://circleci.com/gh/Alma-media/go-config.svg?style=shield)](https://circleci.com/gh/Alma-media/go-config)
+[![Build Status][circleci-badge]][circleci-link]
+[![Report Card][report-badge]][report-link]
 
 Utility package to read the configuration.
 
@@ -51,3 +52,8 @@ func main() {
 	fmt.Println(conf)
 }
 ```
+
+[circleci-badge]: https://circleci.com/gh/Alma-media/go-config.svg?style=shield
+[circleci-link]: https://circleci.com/gh/Alma-media/go-config
+[report-badge]: https://goreportcard.com/badge/github.com/Alma-media/go-config
+[report-link]: https://goreportcard.com/report/github.com/Alma-media/go-config
