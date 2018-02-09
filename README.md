@@ -2,6 +2,7 @@
 
 [![Build Status][circleci-badge]][circleci-link]
 [![Report Card][report-badge]][report-link]
+[![GoCover][cover-badge]][cover-link]
 
 Utility package to read the configuration.
 
@@ -57,3 +58,5 @@ func main() {
 [circleci-link]: https://circleci.com/gh/Alma-media/go-config
 [report-badge]: https://goreportcard.com/badge/github.com/Alma-media/go-config
 [report-link]: https://goreportcard.com/report/github.com/Alma-media/go-config
+[cover-badge]: https://gocover.io/_badge/github.com/Alma-media/go-config
+[cover-link]: https://gocover.io/github.com/Alma-media/go-config
