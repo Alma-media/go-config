@@ -353,7 +353,7 @@ func Test_SetValue(t *testing.T) {
 	Convey("Setting values", t, func() {
 		for _, c := range cases {
 			Convey(c.title, func() {
-				flagSet := flag.NewFlagSet("config", flag.ContinueOnError)
+				flagSet := NewFlagSet("config", flag.ContinueOnError)
 				err := setValue(c.in.field, flagSet, c.in.flgKey, c.in.value)
 				So(c.in.field.Interface(), ShouldEqual, c.out)
 				So(err, ShouldResemble, c.err)
