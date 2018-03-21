@@ -4,23 +4,26 @@ import (
 	"strings"
 )
 
-// stringArray Value
-type stringArray []string
+// ArrValueDelimiter is an array value delimiter.
+const ArrValueDelimiter = ","
 
-func newStringArray(val []string, p *[]string) *stringArray {
+// arrayString Value implements flag.Value, flag.Getter interfaces.
+type arrayString []string
+
+func newArrayString(val []string, p *[]string) *arrayString {
 	*p = val
-	return (*stringArray)(p)
+	return (*arrayString)(p)
 }
 
-func (s *stringArray) Set(val string) error {
-	*s = stringArray(strings.Split(val, ","))
+func (s *arrayString) Set(val string) error {
+	*s = arrayString(strings.Split(val, ArrValueDelimiter))
 	return nil
 }
 
-func (s *stringArray) Get() interface{} {
+func (s *arrayString) Get() interface{} {
 	return []string(*s)
 }
 
-func (s *stringArray) String() string {
-	return strings.Join([]string(*s), ",")
+func (s *arrayString) String() string {
+	return strings.Join([]string(*s), ArrValueDelimiter)
 }

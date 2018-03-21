@@ -187,7 +187,7 @@ func setValue(field reflect.Value, flagSet *FlagSet, flgKey, value string) error
 	case string:
 		flagSet.StringVar(field.Addr().Interface().(*string), flgKey, value, "")
 	case []string:
-		flagSet.ArrayStringVar(field.Addr().Interface().(*[]string), flgKey, strings.Split(value, ","), "")
+		flagSet.ArrayStringVar(field.Addr().Interface().(*[]string), flgKey, strings.Split(value, ArrValueDelimiter), "")
 	case bool:
 		val, err := strconv.ParseBool(value)
 		if err != nil {

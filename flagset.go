@@ -16,5 +16,11 @@ func NewFlagSet(name string, errorHandling flag.ErrorHandling) *FlagSet {
 // ArrayStringVar defines a []string flag with specified name, default value, and usage string.
 // The argument p points to a []string variable in which to store the value of the flag.
 func (f *FlagSet) ArrayStringVar(p *[]string, name string, value []string, usage string) {
-	f.Var(newStringArray(value, p), name, usage)
+	f.Var(newArrayString(value, p), name, usage)
+}
+
+// ArrayStringVar defines a []string flag with specified name, default value, and usage string.
+// The argument p points to a []string variable in which to store the value of the flag.
+func ArrayStringVar(p *[]string, name string, value []string, usage string) {
+	flag.CommandLine.Var(newArrayString(value, p), name, usage)
 }
