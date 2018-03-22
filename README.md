@@ -12,10 +12,10 @@ go get -u github.com/Alma-media/go-config
 ```
 
 ## How to use?
-1. Create a config struct
-2. Set default values (if needed) for struct fields
-3. Import package `github.com/Alma-media/go-config`
-4. Pass the struct (or better a pointer to it if you are going to pass the config across the application) to `Init()` func
+1. Import package `github.com/Alma-media/go-config`
+2. Create a config struct
+3. Set default values (if needed) for struct fields
+4. Pass the pointer to a struct to `Init()` func
 5. Check error and enjoy
 
 ## Priorities
