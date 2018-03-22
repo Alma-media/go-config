@@ -173,6 +173,7 @@ func Test_SetValue(t *testing.T) {
 		B   bool
 		F32 float32
 		F64 float64
+		AS  []string
 	}
 	type in struct {
 		field         reflect.Value
@@ -259,13 +260,22 @@ func Test_SetValue(t *testing.T) {
 			out: "test string",
 		},
 		{
+			title: "array string value",
+			in: in{
+				reflectStruct.FieldByName("AS"),
+				"flag-test",
+				"foo,bar",
+			},
+			out: []string{"foo", "bar"},
+		},
+		{
 			title: "unsupported float32 value",
 			in: in{
 				reflectStruct.FieldByName("F32"),
 				"flag-test",
 				"3.14159",
 			},
-			out: 0,
+			out: float32(0),
 			err: errUnsupportedType(reflectStruct.FieldByName("F32").Kind().String()),
 		},
 		{
@@ -287,7 +297,7 @@ func Test_SetValue(t *testing.T) {
 				"flag-test",
 				"wrong",
 			},
-			out: 0,
+			out: int(0),
 			err: errCantUse("wrong", *new(int)),
 		},
 		{
@@ -299,7 +309,7 @@ func Test_SetValue(t *testing.T) {
 				"flag-test",
 				"wrong",
 			},
-			out: 0,
+			out: uint(0),
 			err: errCantUse("wrong", *new(uint)),
 		},
 		{
@@ -311,7 +321,7 @@ func Test_SetValue(t *testing.T) {
 				"flag-test",
 				"wrong",
 			},
-			out: 0,
+			out: int64(0),
 			err: errCantUse("wrong", *new(int64)),
 		},
 		{
@@ -323,7 +333,7 @@ func Test_SetValue(t *testing.T) {
 				"flag-test",
 				"wrong",
 			},
-			out: 0,
+			out: uint64(0),
 			err: errCantUse("wrong", *new(uint64)),
 		},
 		{
@@ -335,7 +345,7 @@ func Test_SetValue(t *testing.T) {
 				"flag-test",
 				"wrong",
 			},
-			out: 0,
+			out: float64(0),
 			err: errCantUse("wrong", *new(float64)),
 		},
 		{
@@ -353,9 +363,9 @@ func Test_SetValue(t *testing.T) {
 	Convey("Setting values", t, func() {
 		for _, c := range cases {
 			Convey(c.title, func() {
-				flagSet := flag.NewFlagSet("config", flag.ContinueOnError)
+				flagSet := NewFlagSet("config", flag.ContinueOnError)
 				err := setValue(c.in.field, flagSet, c.in.flgKey, c.in.value)
-				So(c.in.field.Interface(), ShouldEqual, c.out)
+				So(c.in.field.Interface(), ShouldResemble, c.out)
 				So(err, ShouldResemble, c.err)
 			})
 		}

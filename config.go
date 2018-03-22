@@ -74,7 +74,7 @@ func Init(c interface{}, prefix string) error {
 	// set custom "application" prefix (will be used to build ENV VAR names)
 	EnvPrefix = prefix
 	// init flagset
-	flagSet := flag.NewFlagSet("config", flag.ContinueOnError)
+	flagSet := NewFlagSet("config", flag.ContinueOnError)
 	// reset required list
 	seen = make(map[string]bool)
 	if err := initConfig(rv, flagSet, emptyPrefix); err != nil {
@@ -98,7 +98,7 @@ func Init(c interface{}, prefix string) error {
 
 // initConfig recursively loads parameters to Config struct, supports nested
 // anonymous structs.
-func initConfig(c reflect.Value, flagSet *flag.FlagSet, prefix string) error {
+func initConfig(c reflect.Value, flagSet *FlagSet, prefix string) error {
 	c = reflect.Indirect(c)
 	if c.Kind() != reflect.Struct {
 		return errInvalidReceiver
@@ -146,7 +146,7 @@ func initConfig(c reflect.Value, flagSet *flag.FlagSet, prefix string) error {
 }
 
 // setValue casts string value and assigns it to the field of Config struct.
-func setValue(field reflect.Value, flagSet *flag.FlagSet, flgKey, value string) error {
+func setValue(field reflect.Value, flagSet *FlagSet, flgKey, value string) error {
 	switch t := field.Interface().(type) {
 	case time.Duration:
 		val, err := time.ParseDuration(value)
@@ -186,6 +186,8 @@ func setValue(field reflect.Value, flagSet *flag.FlagSet, flgKey, value string) 
 		flagSet.Float64Var(field.Addr().Interface().(*float64), flgKey, val, "")
 	case string:
 		flagSet.StringVar(field.Addr().Interface().(*string), flgKey, value, "")
+	case []string:
+		flagSet.ArrayStringVar(field.Addr().Interface().(*[]string), flgKey, strings.Split(value, comma), "")
 	case bool:
 		val, err := strconv.ParseBool(value)
 		if err != nil {
