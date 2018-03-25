@@ -18,6 +18,13 @@ go get -u github.com/Alma-media/go-config
 4. Pass the pointer to a struct to `Init()` func
 5. Check error and enjoy
 
+## Supported data types
+- `bool`
+- `int`, `uint`, `int64`, `uint64`
+- `float64`
+- `time.Duration`
+- `string`, `[]string`
+
 ## Priorities
 1. flags - hi
 2. env vars - mid
