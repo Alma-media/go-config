@@ -160,6 +160,12 @@ func setValue(field reflect.Value, flagSet *FlagSet, flgKey, value string) error
 			return errCantUse(value, t)
 		}
 		flagSet.IntVar(field.Addr().Interface().(*int), flgKey, val, "")
+	case []int:
+		arrInt := new(arrayInt)
+		if err := arrInt.Set(value); err != nil {
+			return err
+		}
+		flagSet.ArrayIntVar(field.Addr().Interface().(*[]int), flgKey, []int(*arrInt), "")
 	case int64:
 		val, err := strconv.ParseInt(value, 10, 64)
 		if err != nil && value != "" {

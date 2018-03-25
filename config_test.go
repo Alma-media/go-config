@@ -166,6 +166,7 @@ func Test_SetValue(t *testing.T) {
 	type testStruct struct {
 		D   time.Duration
 		I   int
+		AI  []int
 		I64 int64
 		U   uint
 		U64 uint64
@@ -204,6 +205,15 @@ func Test_SetValue(t *testing.T) {
 				"123",
 			},
 			out: int(123),
+		},
+		{
+			title: "[]int value",
+			in: in{
+				reflectStruct.FieldByName("AI"),
+				"flag-test",
+				"1,2,3,4,5,6,7,8,9,0",
+			},
+			out: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 0},
 		},
 		{
 			title: "int64 value",
@@ -299,6 +309,18 @@ func Test_SetValue(t *testing.T) {
 			},
 			out: int(0),
 			err: errCantUse("wrong", *new(int)),
+		},
+		{
+			title: "wrong []int value",
+			in: in{
+				reflect.Indirect(
+					reflect.ValueOf(new(testStruct)),
+				).FieldByName("AI"),
+				"flag-test",
+				"1,2,3,wrong",
+			},
+			out: []int(nil),
+			err: errCantUse("1,2,3,wrong", []int{}),
 		},
 		{
 			title: "wrong uint value",
