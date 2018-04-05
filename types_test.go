@@ -20,7 +20,7 @@ var (
 func Test_arrayInt(t *testing.T) {
 	Convey("test arrayInt type", t, func() {
 		ptr := new([]int)
-		val := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+		val := []int{-1, 2, -3, 4, -5, 6, -7, 8, -9, 0}
 		arrInt := newArrayInt(val, ptr)
 
 		Convey("instantiate arrayInt with constructor func", func() {
@@ -34,8 +34,8 @@ func Test_arrayInt(t *testing.T) {
 		})
 
 		Convey("parse new arrayInt value from a string", func() {
-			out := []int{0, 9, 8, 7, 6, 5, 4, 3, 2, 1}
-			arrInt.Set("0,9,8,7,6,5,4,3,2,1")
+			out := []int{0, -9, 8, -7, 6, -5, 4, -3, 2, -1}
+			arrInt.Set("0,-9,8,-7,6,-5,4,-3,2,-1")
 			So([]int(*arrInt), ShouldResemble, out)
 		})
 
@@ -44,7 +44,7 @@ func Test_arrayInt(t *testing.T) {
 		})
 
 		Convey("convert arrayInt to a string", func() {
-			So(arrInt.String(), ShouldEqual, "1,2,3,4,5,6,7,8,9,0")
+			So(arrInt.String(), ShouldEqual, "-1,2,-3,4,-5,6,-7,8,-9,0")
 		})
 	})
 }
