@@ -169,6 +169,7 @@ func Test_SetValue(t *testing.T) {
 		AI  []int
 		I64 int64
 		U   uint
+		AU  []uint
 		U64 uint64
 		S   string
 		B   bool
@@ -232,6 +233,15 @@ func Test_SetValue(t *testing.T) {
 				"345",
 			},
 			out: uint(345),
+		},
+		{
+			title: "[]uint value",
+			in: in{
+				reflectStruct.FieldByName("AU"),
+				"flag-test",
+				"1,2,3,4,5,6,7,8,9,0",
+			},
+			out: []uint{1, 2, 3, 4, 5, 6, 7, 8, 9, 0},
 		},
 		{
 			title: "uint64 value",
@@ -333,6 +343,18 @@ func Test_SetValue(t *testing.T) {
 			},
 			out: uint(0),
 			err: errCantUse("wrong", *new(uint)),
+		},
+		{
+			title: "wrong []uint value",
+			in: in{
+				reflect.Indirect(
+					reflect.ValueOf(new(testStruct)),
+				).FieldByName("AU"),
+				"flag-test",
+				"1,2,3,wrong",
+			},
+			out: []uint(nil),
+			err: errCantUse("1,2,3,wrong", []uint{}),
 		},
 		{
 			title: "wrong int64 value",

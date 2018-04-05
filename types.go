@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -33,7 +34,40 @@ func (i *arrayInt) Get() interface{} {
 func (i *arrayInt) String() string {
 	var arrStr []string
 	for _, curr := range *i {
-		arrStr = append(arrStr, strconv.Itoa(curr))
+		arrStr = append(arrStr, fmt.Sprint(curr))
+	}
+	return strings.Join(arrStr, comma)
+}
+
+// arrayUint Value implements flag.Value, flag.Getter interfaces.
+type arrayUint []uint
+
+func newArrayUint(val []uint, p *[]uint) *arrayUint {
+	*p = val
+	return (*arrayUint)(p)
+}
+
+func (u *arrayUint) Set(val string) error {
+	*u = []uint{}
+	arrStr := strings.Split(val, comma)
+	for _, currStr := range arrStr {
+		currUint64, err := strconv.ParseUint(currStr, 10, 32)
+		if err != nil {
+			return errCantUse(val, []uint{})
+		}
+		*u = append(*u, uint(currUint64))
+	}
+	return nil
+}
+
+func (u *arrayUint) Get() interface{} {
+	return []uint(*u)
+}
+
+func (u *arrayUint) String() string {
+	var arrStr []string
+	for _, curr := range *u {
+		arrStr = append(arrStr, fmt.Sprint(curr))
 	}
 	return strings.Join(arrStr, comma)
 }
