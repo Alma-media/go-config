@@ -50,7 +50,7 @@ func Test_arrayInt(t *testing.T) {
 }
 
 func Test_arrayUint(t *testing.T) {
-	Convey("test arrayInt type", t, func() {
+	Convey("test arrayUint type", t, func() {
 		ptr := new([]uint)
 		val := []uint{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
 		arrUint := newArrayUint(val, ptr)
