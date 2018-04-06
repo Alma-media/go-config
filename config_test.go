@@ -164,17 +164,18 @@ func Test_EnvName(t *testing.T) {
 
 func Test_SetValue(t *testing.T) {
 	type testStruct struct {
-		D   time.Duration
-		I   int
-		AI  []int
-		I64 int64
-		U   uint
-		U64 uint64
-		S   string
-		B   bool
-		F32 float32
-		F64 float64
-		AS  []string
+		D    time.Duration
+		I    int
+		AI   []int
+		I64  int64
+		AI64 []int64
+		U    uint
+		U64  uint64
+		S    string
+		B    bool
+		F32  float32
+		F64  float64
+		AS   []string
 	}
 	type in struct {
 		field         reflect.Value
@@ -223,6 +224,15 @@ func Test_SetValue(t *testing.T) {
 				"234",
 			},
 			out: int64(234),
+		},
+		{
+			title: "[]int64 value",
+			in: in{
+				reflectStruct.FieldByName("AI64"),
+				"flag-test",
+				"-1,2,-3,4,-5,6,-7,8,-9,0",
+			},
+			out: []int64{-1, 2, -3, 4, -5, 6, -7, 8, -9, 0},
 		},
 		{
 			title: "uint value",
@@ -321,6 +331,18 @@ func Test_SetValue(t *testing.T) {
 			},
 			out: []int(nil),
 			err: errCantUse("1,2,3,wrong", []int{}),
+		},
+		{
+			title: "wrong []int64 value",
+			in: in{
+				reflect.Indirect(
+					reflect.ValueOf(new(testStruct)),
+				).FieldByName("AI64"),
+				"flag-test",
+				"-1,2,-3,wrong",
+			},
+			out: []int64(nil),
+			err: errCantUse("-1,2,-3,wrong", []int64{}),
 		},
 		{
 			title: "wrong uint value",
