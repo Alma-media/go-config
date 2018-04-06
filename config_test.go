@@ -164,33 +164,19 @@ func Test_EnvName(t *testing.T) {
 
 func Test_SetValue(t *testing.T) {
 	type testStruct struct {
-<<<<<<< HEAD
-		D   time.Duration
-		I   int
-		AI  []int
-		I64 int64
-		U   uint
-		AU  []uint
-		U64 uint64
-		S   string
-		B   bool
-		F32 float32
-		F64 float64
-		AS  []string
-=======
 		D    time.Duration
 		I    int
 		AI   []int
 		I64  int64
 		AI64 []int64
 		U    uint
+		AU   []uint
 		U64  uint64
 		S    string
 		B    bool
 		F32  float32
 		F64  float64
 		AS   []string
->>>>>>> full []int64 support
 	}
 	type in struct {
 		field         reflect.Value
