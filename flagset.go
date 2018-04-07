@@ -25,6 +25,18 @@ func ArrayIntVar(p *[]int, name string, value []int, usage string) {
 	flag.CommandLine.Var(newArrayInt(value, p), name, usage)
 }
 
+// ArrayUintVar defines an []uint flag with specified name, default value, and usage string.
+// The argument p points to an []uint variable in which to store the value of the flag.
+func (f *FlagSet) ArrayUintVar(p *[]uint, name string, value []uint, usage string) {
+	f.Var(newArrayUint(value, p), name, usage)
+}
+
+// ArrayUintVar defines an []uint flag with specified name, default value, and usage string.
+// The argument p points to an []uint variable in which to store the value of the flag.
+func ArrayUintVar(p *[]uint, name string, value []uint, usage string) {
+	flag.CommandLine.Var(newArrayUint(value, p), name, usage)
+}
+
 // ArrayStringVar defines an []string flag with specified name, default value, and usage string.
 // The argument p points to an []string variable in which to store the value of the flag.
 func (f *FlagSet) ArrayStringVar(p *[]string, name string, value []string, usage string) {
