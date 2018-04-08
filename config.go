@@ -196,6 +196,12 @@ func setValue(field reflect.Value, flagSet *FlagSet, flgKey, value string) error
 			return errCantUse(value, t)
 		}
 		flagSet.Uint64Var(field.Addr().Interface().(*uint64), flgKey, val, "")
+	case []uint64:
+		arrUint64 := new(arrayUint64)
+		if err := arrUint64.Set(value); err != nil {
+			return err
+		}
+		flagSet.ArrayUint64Var(field.Addr().Interface().(*[]uint64), flgKey, []uint64(*arrUint64), "")
 	case float64:
 		val, err := strconv.ParseFloat(value, 64)
 		if err != nil && value != "" {
