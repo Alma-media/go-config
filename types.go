@@ -146,6 +146,41 @@ func (u64 *arrayUint64) String() string {
 	return strings.Join(arrStr, comma)
 }
 
+// arrayFloat64 implements flag.Value, flag.Getter interfaces.
+type arrayFloat64 []float64
+
+func newArrayFloat64(val []float64, p *[]float64) *arrayFloat64 {
+	*p = val
+	return (*arrayFloat64)(p)
+}
+
+func (f64 *arrayFloat64) Set(val string) error {
+	*f64 = []float64{}
+	if val != "" {
+		arrStr := strings.Split(val, comma)
+		for _, currStr := range arrStr {
+			curr, err := strconv.ParseFloat(currStr, 64)
+			if err != nil {
+				return errCantUse(val, []float64{})
+			}
+			*f64 = append(*f64, curr)
+		}
+	}
+	return nil
+}
+
+func (f64 *arrayFloat64) Get() interface{} {
+	return []float64(*f64)
+}
+
+func (f64 *arrayFloat64) String() string {
+	var arrStr []string
+	for _, curr := range *f64 {
+		arrStr = append(arrStr, fmt.Sprint(curr))
+	}
+	return strings.Join(arrStr, comma)
+}
+
 // arrayString implements flag.Value, flag.Getter interfaces.
 type arrayString []string
 

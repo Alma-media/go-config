@@ -16,6 +16,8 @@ var (
 	_ flag.Getter = &arrayUint{}
 	_ flag.Value  = &arrayUint64{}
 	_ flag.Getter = &arrayUint64{}
+	_ flag.Value  = &arrayFloat64{}
+	_ flag.Getter = &arrayFloat64{}
 	_ flag.Value  = &arrayString{}
 	_ flag.Getter = &arrayString{}
 )
@@ -120,6 +122,32 @@ func Test_arrayUint64(t *testing.T) {
 
 		Convey("convert arrayUint64 to a string", func() {
 			So(arrUint64.String(), ShouldEqual, "1,2,3,4,5,6,7,8,9,0")
+		})
+	})
+}
+
+func Test_arrayFloat64(t *testing.T) {
+	Convey("test arrayFloat64 type", t, func() {
+		ptr := new([]float64)
+		val := []float64{-1.1, 2.2, -3.14, 4.56, -5.432, 6, -7, 8, -9, 0.01}
+		arrFloat64 := newArrayFloat64(val, ptr)
+
+		Convey("get actual []float64 value from arrayFloat64", func() {
+			So(arrFloat64.Get(), ShouldResemble, val)
+		})
+
+		Convey("parse new arrayFloat64 value from a string", func() {
+			out := []float64{0, -9, 8, -7, 6, -5, 4, -3, 2, -1}
+			arrFloat64.Set("0,-9,8,-7,6,-5,4,-3,2,-1")
+			So([]float64(*arrFloat64), ShouldResemble, out)
+		})
+
+		Convey("try to parse invalid arrayFloat64 from a string", func() {
+			So(arrFloat64.Set("false,42"), ShouldResemble, errCantUse("false,42", []float64{}))
+		})
+
+		Convey("convert arrayFloat64 to a string", func() {
+			So(arrFloat64.String(), ShouldEqual, "-1.1,2.2,-3.14,4.56,-5.432,6,-7,8,-9,0.01")
 		})
 	})
 }

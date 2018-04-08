@@ -208,6 +208,12 @@ func setValue(field reflect.Value, flagSet *FlagSet, flgKey, value string) error
 			return errCantUse(value, t)
 		}
 		flagSet.Float64Var(field.Addr().Interface().(*float64), flgKey, val, "")
+	case []float64:
+		arrFloat64 := new(arrayFloat64)
+		if err := arrFloat64.Set(value); err != nil {
+			return err
+		}
+		flagSet.ArrayFloat64Var(field.Addr().Interface().(*[]float64), flgKey, []float64(*arrFloat64), "")
 	case string:
 		flagSet.StringVar(field.Addr().Interface().(*string), flgKey, value, "")
 	case []string:

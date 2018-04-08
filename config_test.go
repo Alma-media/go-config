@@ -177,6 +177,7 @@ func Test_SetValue(t *testing.T) {
 		B    bool
 		F32  float32
 		F64  float64
+		AF64 []float64
 		AS   []string
 	}
 	type in struct {
@@ -280,6 +281,15 @@ func Test_SetValue(t *testing.T) {
 				"567.89",
 			},
 			out: float64(567.89),
+		},
+		{
+			title: "[]float64 value",
+			in: in{
+				reflectStruct.FieldByName("AF64"),
+				"flag-test",
+				"-1.1,-2.25,3.14,4,-5.05,6,-7,8,-9,0.0001",
+			},
+			out: []float64{-1.1, -2.25, 3.14, 4, -5.05, 6, -7, 8, -9, 0.0001},
 		},
 		{
 			title: "bool value",
@@ -435,6 +445,18 @@ func Test_SetValue(t *testing.T) {
 			},
 			out: float64(0),
 			err: errCantUse("wrong", *new(float64)),
+		},
+		{
+			title: "wrong []float64 value",
+			in: in{
+				reflect.Indirect(
+					reflect.ValueOf(new(testStruct)),
+				).FieldByName("AF64"),
+				"flag-test",
+				"-1,-2,3.14,wrong",
+			},
+			out: []float64(nil),
+			err: errCantUse("-1,-2,3.14,wrong", []float64{}),
 		},
 		{
 			title: "wrong bool value",
