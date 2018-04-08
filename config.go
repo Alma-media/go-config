@@ -154,6 +154,12 @@ func setValue(field reflect.Value, flagSet *FlagSet, flgKey, value string) error
 			return errCantUse(value, t)
 		}
 		flagSet.DurationVar(field.Addr().Interface().(*time.Duration), flgKey, val, "")
+	case []time.Duration:
+		arrDuration := new(arrayDuration)
+		if err := arrDuration.Set(value); err != nil {
+			return err
+		}
+		flagSet.ArrayDurationVar(field.Addr().Interface().(*[]time.Duration), flgKey, []time.Duration(*arrDuration), "")
 	case int:
 		val, err := strconv.Atoi(value)
 		if err != nil && value != "" {

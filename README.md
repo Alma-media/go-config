@@ -25,7 +25,7 @@ go get -u github.com/Alma-media/go-config
 - `int64`, `[]int64`
 - `uint64`, `[]uint64`
 - `float64`, `[]float64`
-- `time.Duration`
+- `time.Duration`, `[]time.Duration`
 - `string`, `[]string`
 
 ## Priorities

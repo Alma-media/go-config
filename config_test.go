@@ -165,6 +165,7 @@ func Test_EnvName(t *testing.T) {
 func Test_SetValue(t *testing.T) {
 	type testStruct struct {
 		D    time.Duration
+		AD   []time.Duration
 		I    int
 		AI   []int
 		I64  int64
@@ -193,132 +194,6 @@ func Test_SetValue(t *testing.T) {
 	var reflectStruct = reflect.Indirect(reflect.ValueOf(new(testStruct)))
 	var cases = []testCase{
 		{
-			title: "time.Duration",
-			in: in{
-				reflectStruct.FieldByName("D"),
-				"flag-test",
-				"3h",
-			},
-			out: time.Duration(10800000000000),
-		},
-		{
-			title: "int value",
-			in: in{
-				reflectStruct.FieldByName("I"),
-				"flag-test",
-				"123",
-			},
-			out: int(123),
-		},
-		{
-			title: "[]int value",
-			in: in{
-				reflectStruct.FieldByName("AI"),
-				"flag-test",
-				"1,2,3,4,5,6,7,8,9,0",
-			},
-			out: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 0},
-		},
-		{
-			title: "int64 value",
-			in: in{
-				reflectStruct.FieldByName("I64"),
-				"flag-test",
-				"234",
-			},
-			out: int64(234),
-		},
-		{
-			title: "[]int64 value",
-			in: in{
-				reflectStruct.FieldByName("AI64"),
-				"flag-test",
-				"-1,2,-3,4,-5,6,-7,8,-9,0",
-			},
-			out: []int64{-1, 2, -3, 4, -5, 6, -7, 8, -9, 0},
-		},
-		{
-			title: "uint value",
-			in: in{
-				reflectStruct.FieldByName("U"),
-				"flag-test",
-				"345",
-			},
-			out: uint(345),
-		},
-		{
-			title: "[]uint value",
-			in: in{
-				reflectStruct.FieldByName("AU"),
-				"flag-test",
-				"1,2,3,4,5,6,7,8,9,0",
-			},
-			out: []uint{1, 2, 3, 4, 5, 6, 7, 8, 9, 0},
-		},
-		{
-			title: "[]uint64 value",
-			in: in{
-				reflectStruct.FieldByName("AU64"),
-				"flag-test",
-				"1,2,3,4,5,6,7,8,9,0",
-			},
-			out: []uint64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0},
-		},
-		{
-			title: "uint64 value",
-			in: in{
-				reflectStruct.FieldByName("U64"),
-				"flag-test",
-				"456",
-			},
-			out: uint64(456),
-		},
-		{
-			title: "float64 value",
-			in: in{
-				reflectStruct.FieldByName("F64"),
-				"flag-test",
-				"567.89",
-			},
-			out: float64(567.89),
-		},
-		{
-			title: "[]float64 value",
-			in: in{
-				reflectStruct.FieldByName("AF64"),
-				"flag-test",
-				"-1.1,-2.25,3.14,4,-5.05,6,-7,8,-9,0.0001",
-			},
-			out: []float64{-1.1, -2.25, 3.14, 4, -5.05, 6, -7, 8, -9, 0.0001},
-		},
-		{
-			title: "bool value",
-			in: in{
-				reflectStruct.FieldByName("B"),
-				"flag-test",
-				"true",
-			},
-			out: true,
-		},
-		{
-			title: "string value",
-			in: in{
-				reflectStruct.FieldByName("S"),
-				"flag-test",
-				"test string",
-			},
-			out: "test string",
-		},
-		{
-			title: "array string value",
-			in: in{
-				reflectStruct.FieldByName("AS"),
-				"flag-test",
-				"foo,bar",
-			},
-			out: []string{"foo", "bar"},
-		},
-		{
 			title: "unsupported float32 value",
 			in: in{
 				reflectStruct.FieldByName("F32"),
@@ -335,8 +210,18 @@ func Test_SetValue(t *testing.T) {
 				"flag-test",
 				"wrong",
 			},
-			out: time.Duration(10800000000000),
+			out: time.Duration(0),
 			err: errCantUse("wrong", *new(time.Duration)),
+		},
+		{
+			title: "wrong []time.Duration",
+			in: in{
+				reflectStruct.FieldByName("AD"),
+				"flag-test",
+				"wrong",
+			},
+			out: []time.Duration(nil),
+			err: errCantUse("wrong", *new([]time.Duration)),
 		},
 		{
 			title: "wrong int value",
@@ -468,6 +353,141 @@ func Test_SetValue(t *testing.T) {
 				"wrong",
 			},
 			out: false,
+		},
+		{
+			title: "time.Duration",
+			in: in{
+				reflectStruct.FieldByName("D"),
+				"flag-test",
+				"3h",
+			},
+			out: time.Duration(10800000000000),
+		},
+		{
+			title: "[]time.Duration value",
+			in: in{
+				reflectStruct.FieldByName("AD"),
+				"flag-test",
+				"1ns,1µs,1ms,1s",
+			},
+			out: []time.Duration{1, 1000, 1000000, 1000000000},
+		},
+		{
+			title: "int value",
+			in: in{
+				reflectStruct.FieldByName("I"),
+				"flag-test",
+				"123",
+			},
+			out: int(123),
+		},
+		{
+			title: "[]int value",
+			in: in{
+				reflectStruct.FieldByName("AI"),
+				"flag-test",
+				"1,2,3,4,5,6,7,8,9,0",
+			},
+			out: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 0},
+		},
+		{
+			title: "int64 value",
+			in: in{
+				reflectStruct.FieldByName("I64"),
+				"flag-test",
+				"234",
+			},
+			out: int64(234),
+		},
+		{
+			title: "[]int64 value",
+			in: in{
+				reflectStruct.FieldByName("AI64"),
+				"flag-test",
+				"-1,2,-3,4,-5,6,-7,8,-9,0",
+			},
+			out: []int64{-1, 2, -3, 4, -5, 6, -7, 8, -9, 0},
+		},
+		{
+			title: "uint value",
+			in: in{
+				reflectStruct.FieldByName("U"),
+				"flag-test",
+				"345",
+			},
+			out: uint(345),
+		},
+		{
+			title: "[]uint value",
+			in: in{
+				reflectStruct.FieldByName("AU"),
+				"flag-test",
+				"1,2,3,4,5,6,7,8,9,0",
+			},
+			out: []uint{1, 2, 3, 4, 5, 6, 7, 8, 9, 0},
+		},
+		{
+			title: "[]uint64 value",
+			in: in{
+				reflectStruct.FieldByName("AU64"),
+				"flag-test",
+				"1,2,3,4,5,6,7,8,9,0",
+			},
+			out: []uint64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0},
+		},
+		{
+			title: "uint64 value",
+			in: in{
+				reflectStruct.FieldByName("U64"),
+				"flag-test",
+				"456",
+			},
+			out: uint64(456),
+		},
+		{
+			title: "float64 value",
+			in: in{
+				reflectStruct.FieldByName("F64"),
+				"flag-test",
+				"567.89",
+			},
+			out: float64(567.89),
+		},
+		{
+			title: "[]float64 value",
+			in: in{
+				reflectStruct.FieldByName("AF64"),
+				"flag-test",
+				"-1.1,-2.25,3.14,4,-5.05,6,-7,8,-9,0.0001",
+			},
+			out: []float64{-1.1, -2.25, 3.14, 4, -5.05, 6, -7, 8, -9, 0.0001},
+		},
+		{
+			title: "bool value",
+			in: in{
+				reflectStruct.FieldByName("B"),
+				"flag-test",
+				"true",
+			},
+			out: true,
+		},
+		{
+			title: "string value",
+			in: in{
+				reflectStruct.FieldByName("S"),
+				"flag-test",
+				"test string",
+			},
+			out: "test string",
+		},
+		{
+			title: "array string value",
+			in: in{
+				reflectStruct.FieldByName("AS"),
+				"flag-test",
+				"foo,bar",
+			},
+			out: []string{"foo", "bar"},
 		},
 	}
 	Convey("Setting values", t, func() {
