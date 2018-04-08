@@ -1,6 +1,9 @@
 package config
 
-import "flag"
+import (
+	"flag"
+	"time"
+)
 
 // FlagSet represents extended flag.FlagSet.
 type FlagSet struct {
@@ -41,6 +44,12 @@ func (f *FlagSet) ArrayUint64Var(p *[]uint64, name string, value []uint64, usage
 // The argument p points to an []float64 variable in which to store the value of the flag.
 func (f *FlagSet) ArrayFloat64Var(p *[]float64, name string, value []float64, usage string) {
 	f.Var(newArrayFloat64(value, p), name, usage)
+}
+
+// ArrayDurationVar defines an []time.Duration flag with specified name, default value, and usage string.
+// The argument p points to an []time.Duration variable in which to store the value of the flag.
+func (f *FlagSet) ArrayDurationVar(p *[]time.Duration, name string, value []time.Duration, usage string) {
+	f.Var(newArrayDuration(value, p), name, usage)
 }
 
 // ArrayStringVar defines an []string flag with specified name, default value, and usage string.

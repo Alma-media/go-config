@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // arrayInt implements flag.Value, flag.Getter interfaces.
@@ -177,6 +178,41 @@ func (f64 *arrayFloat64) String() string {
 	var arrStr []string
 	for _, curr := range *f64 {
 		arrStr = append(arrStr, fmt.Sprint(curr))
+	}
+	return strings.Join(arrStr, comma)
+}
+
+// arrayDuration implements flag.Value, flag.Getter interfaces.
+type arrayDuration []time.Duration
+
+func newArrayDuration(val []time.Duration, p *[]time.Duration) *arrayDuration {
+	*p = val
+	return (*arrayDuration)(p)
+}
+
+func (d *arrayDuration) Set(val string) error {
+	*d = []time.Duration{}
+	if val != "" {
+		arrStr := strings.Split(val, comma)
+		for _, currStr := range arrStr {
+			curr, err := time.ParseDuration(currStr)
+			if err != nil {
+				return errCantUse(val, []time.Duration{})
+			}
+			*d = append(*d, curr)
+		}
+	}
+	return nil
+}
+
+func (d *arrayDuration) Get() interface{} {
+	return []time.Duration(*d)
+}
+
+func (d *arrayDuration) String() string {
+	var arrStr []string
+	for _, curr := range *d {
+		arrStr = append(arrStr, curr.String())
 	}
 	return strings.Join(arrStr, comma)
 }

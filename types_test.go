@@ -3,6 +3,7 @@ package config
 import (
 	"flag"
 	"testing"
+	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -18,6 +19,8 @@ var (
 	_ flag.Getter = &arrayUint64{}
 	_ flag.Value  = &arrayFloat64{}
 	_ flag.Getter = &arrayFloat64{}
+	_ flag.Value  = &arrayDuration{}
+	_ flag.Getter = &arrayDuration{}
 	_ flag.Value  = &arrayString{}
 	_ flag.Getter = &arrayString{}
 )
@@ -148,6 +151,36 @@ func Test_arrayFloat64(t *testing.T) {
 
 		Convey("convert arrayFloat64 to a string", func() {
 			So(arrFloat64.String(), ShouldEqual, "-1.1,2.2,-3.14,4.56,-5.432,6,-7,8,-9,0.01")
+		})
+	})
+}
+
+func Test_arrayDuration(t *testing.T) {
+	Convey("test arrayDuration type", t, func() {
+		ptr := new([]time.Duration)
+		val := []time.Duration{1, 1000, 1000000, 1000000000}
+		arrDuration := newArrayDuration(val, ptr)
+
+		Convey("get actual []time.Duration value from arrayDuration", func() {
+			So(arrDuration.Get(), ShouldResemble, val)
+		})
+
+		Convey("parse new arrayDuration value from a string", func() {
+			out := []time.Duration{
+				time.Duration(1000000000),
+				time.Duration(180000000000),
+				time.Duration(4210000000000),
+			}
+			arrDuration.Set("1s,3m,1h10m10s")
+			So([]time.Duration(*arrDuration), ShouldResemble, out)
+		})
+
+		Convey("try to parse invalid arrayDuration from a string", func() {
+			So(arrDuration.Set("1000"), ShouldResemble, errCantUse("1000", []time.Duration{}))
+		})
+
+		Convey("convert arrayDuration to a string", func() {
+			So(arrDuration.String(), ShouldEqual, "1ns,1µs,1ms,1s")
 		})
 	})
 }
