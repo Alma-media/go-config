@@ -39,7 +39,7 @@ func (i *arrayInt) String() string {
 	return strings.Join(arrStr, comma)
 }
 
-// arrayUint Value implements flag.Value, flag.Getter interfaces.
+// arrayUint implements flag.Value, flag.Getter interfaces.
 type arrayUint []uint
 
 func newArrayUint(val []uint, p *[]uint) *arrayUint {
