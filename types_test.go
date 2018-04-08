@@ -11,6 +11,8 @@ var (
 	// compile-time check
 	_ flag.Value  = &arrayInt{}
 	_ flag.Getter = &arrayInt{}
+	_ flag.Value  = &arrayInt64{}
+	_ flag.Getter = &arrayInt64{}
 	_ flag.Value  = &arrayUint{}
 	_ flag.Getter = &arrayUint{}
 	_ flag.Value  = &arrayString{}
