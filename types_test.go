@@ -8,13 +8,14 @@ import (
 )
 
 var (
-	// compile-time check
 	_ flag.Value  = &arrayInt{}
 	_ flag.Getter = &arrayInt{}
 	_ flag.Value  = &arrayInt64{}
 	_ flag.Getter = &arrayInt64{}
 	_ flag.Value  = &arrayUint{}
 	_ flag.Getter = &arrayUint{}
+	_ flag.Value  = &arrayUint64{}
+	_ flag.Getter = &arrayUint64{}
 	_ flag.Value  = &arrayString{}
 	_ flag.Getter = &arrayString{}
 )
@@ -24,12 +25,6 @@ func Test_arrayInt(t *testing.T) {
 		ptr := new([]int)
 		val := []int{-1, 2, -3, 4, -5, 6, -7, 8, -9, 0}
 		arrInt := newArrayInt(val, ptr)
-
-		Convey("instantiate arrayInt with constructor func", func() {
-			So(arrInt, ShouldHaveSameTypeAs, new(arrayInt))
-			So(arrInt, ShouldImplement, (*flag.Value)(nil))
-			So(arrInt, ShouldImplement, (*flag.Getter)(nil))
-		})
 
 		Convey("get actual []int value from arrayInt", func() {
 			So(arrInt.Get(), ShouldResemble, val)
@@ -57,12 +52,6 @@ func Test_arrayUint(t *testing.T) {
 		val := []uint{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
 		arrUint := newArrayUint(val, ptr)
 
-		Convey("instantiate arrayUint with constructor func", func() {
-			So(arrUint, ShouldHaveSameTypeAs, new(arrayUint))
-			So(arrUint, ShouldImplement, (*flag.Value)(nil))
-			So(arrUint, ShouldImplement, (*flag.Getter)(nil))
-		})
-
 		Convey("get actual []uint value from arrayUint", func() {
 			So(arrUint.Get(), ShouldResemble, val)
 		})
@@ -89,12 +78,6 @@ func Test_arrayInt64(t *testing.T) {
 		val := []int64{-1, 2, -3, 4, -5, 6, -7, 8, -9, 0}
 		arrInt64 := newArrayInt64(val, ptr)
 
-		Convey("instantiate arrayInt64 with constructor func", func() {
-			So(arrInt64, ShouldHaveSameTypeAs, new(arrayInt64))
-			So(arrInt64, ShouldImplement, (*flag.Value)(nil))
-			So(arrInt64, ShouldImplement, (*flag.Getter)(nil))
-		})
-
 		Convey("get actual []int64 value from arrayInt64", func() {
 			So(arrInt64.Get(), ShouldResemble, val)
 		})
@@ -111,6 +94,32 @@ func Test_arrayInt64(t *testing.T) {
 
 		Convey("convert arrayInt64 to a string", func() {
 			So(arrInt64.String(), ShouldEqual, "-1,2,-3,4,-5,6,-7,8,-9,0")
+		})
+	})
+}
+
+func Test_arrayUint64(t *testing.T) {
+	Convey("test arrayUint64 type", t, func() {
+		ptr := new([]uint64)
+		val := []uint64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+		arrUint64 := newArrayUint64(val, ptr)
+
+		Convey("get actual []uint64 value from arrayUint64", func() {
+			So(arrUint64.Get(), ShouldResemble, val)
+		})
+
+		Convey("parse new arrayUint64 value from a string", func() {
+			out := []uint64{0, 9, 8, 7, 6, 5, 4, 3, 2, 1}
+			arrUint64.Set("0,9,8,7,6,5,4,3,2,1")
+			So([]uint64(*arrUint64), ShouldResemble, out)
+		})
+
+		Convey("try to parse invalid arrayUint64 from a string", func() {
+			So(arrUint64.Set("false,42"), ShouldResemble, errCantUse("false,42", []uint64{}))
+		})
+
+		Convey("convert arrayUint64 to a string", func() {
+			So(arrUint64.String(), ShouldEqual, "1,2,3,4,5,6,7,8,9,0")
 		})
 	})
 }

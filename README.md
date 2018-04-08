@@ -23,7 +23,7 @@ go get -u github.com/Alma-media/go-config
 - `int`, `[]int`
 - `uint`, `[]uint`
 - `int64`, `[]int64`
-- `uint64`
+- `uint64`, `[]uint64`
 - `float64`
 - `time.Duration`
 - `string`, `[]string`
