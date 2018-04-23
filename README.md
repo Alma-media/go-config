@@ -8,11 +8,11 @@ Utility package to read the configuration.
 
 ## Installation
 ```sh
-go get -u github.com/Alma-media/go-config
+go get -u github.com/tiny-go/config
 ```
 
 ## How to use?
-1. Import package `github.com/Alma-media/go-config`
+1. Import package `github.com/tiny-go/config`
 2. Create a config struct
 3. Set default values (if needed) for struct fields
 4. Pass the pointer to a struct to `Init()` func
@@ -40,7 +40,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/Alma-media/go-config"
+	"github.com/tiny-go/config"
 )
 
 type Config struct {
@@ -64,9 +64,9 @@ func main() {
 }
 ```
 
-[circleci-badge]: https://circleci.com/gh/Alma-media/go-config.svg?style=shield
-[circleci-link]: https://circleci.com/gh/Alma-media/go-config
-[report-badge]: https://goreportcard.com/badge/github.com/Alma-media/go-config
-[report-link]: https://goreportcard.com/report/github.com/Alma-media/go-config
-[cover-badge]: https://gocover.io/_badge/github.com/Alma-media/go-config
-[cover-link]: https://gocover.io/github.com/Alma-media/go-config
+[circleci-badge]: https://circleci.com/gh/tiny-go/config.svg?style=shield
+[circleci-link]: https://circleci.com/gh/tiny-go/config
+[report-badge]: https://goreportcard.com/badge/github.com/tiny-go/config
+[report-link]: https://goreportcard.com/report/github.com/tiny-go/config
+[cover-badge]: https://gocover.io/_badge/github.com/tiny-go/config
+[cover-link]: https://gocover.io/github.com/tiny-go/config

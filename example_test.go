@@ -3,7 +3,7 @@ package config_test
 import (
 	"fmt"
 
-	"github.com/Alma-media/go-config"
+	"github.com/tiny-go/config"
 )
 
 // TestConfig struct
