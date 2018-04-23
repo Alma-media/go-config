@@ -4,7 +4,7 @@ jobs:
     docker:
       # specify the version
       - image: circleci/golang:1.8
-    working_directory: /go/src/github.com/Alma-media/go-config
+    working_directory: /go/src/github.com/tiny-go/config
     steps:
       - checkout
       # specify any bash command here prefixed with `run: `
